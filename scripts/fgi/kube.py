@@ -100,9 +100,9 @@ def kube_ensure_cluster(clusters):
             num_running_pods = len(running_pods["items"])
             num_pending_pods = len(pending_pods["items"])
             for pod in monitoring_pods["items"]:
-                pod_name = pod["metadata"]["name"]
                 healthy = pod["status"]["phase"] == "Running"
                 if not healthy:
+                    pod_name = pod["metadata"]["name"]
                     print(
                         f"{cluster} has an unhealthy monitoring pod {pod_name}. Skipping."
                     )

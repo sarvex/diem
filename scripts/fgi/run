@@ -92,21 +92,20 @@ args, forge_args = build_argparser()
 # was not specified explicitly
 TAG = args.tag
 BASE_TAG = args.base_image_tag
-if not args.tag:
-    if args.pr:  # codebuild using a PR
-        ret = subprocess.call(
-            ["aws", "codebuild", "list-projects"], stdout=subprocess.DEVNULL
-        )
-        if ret != 0:
-            print(f"{FAIL}Failed to access codebuild. Try aws-mfa?{RESTORE}")
-            sys.exit(1)
-        subprocess.call(
-            ["./docker/build-aws.sh", "--build-forge", "--version", f"pull/{args.pr}"]
-        )
-        TAG = f"dev_{USER}_pull_{args.pr}"
-        print(
-            f"**TIP Use ./scripts/fgi -T {TAG} <...> to restart this run with the same tag without rebuilding it"
-        )
+if not args.tag and args.pr:
+    ret = subprocess.call(
+        ["aws", "codebuild", "list-projects"], stdout=subprocess.DEVNULL
+    )
+    if ret != 0:
+        print(f"{FAIL}Failed to access codebuild. Try aws-mfa?{RESTORE}")
+        sys.exit(1)
+    subprocess.call(
+        ["./docker/build-aws.sh", "--build-forge", "--version", f"pull/{args.pr}"]
+    )
+    TAG = f"dev_{USER}_pull_{args.pr}"
+    print(
+        f"**TIP Use ./scripts/fgi -T {TAG} <...> to restart this run with the same tag without rebuilding it"
+    )
 if not args.base_image_tag:
     BASE_TAG = "devnet"
 # ================ Test setup ================
